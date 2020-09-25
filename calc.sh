@@ -1,4 +1,75 @@
 #!/bin/bash
+first=$2
+second=$3
+num_check() {
+	if [[ $second == "" ]]; then
+		if [[ $first == "" ]]; then
+			echo Type first number
+			read first
+			while ! [[ $first =~ [0-9] ]];
+			do
+				echo Nums only, try again
+				read first
+			done
+			echo Type second number
+			read second
+			while ! [[ $second =~ [0-9] ]];
+			do
+				echo Nums only, try again
+				read second
+			done
+		elif ! [[ $first =~ [0-9] ]]; then
+			while ! [[ $first =~ [0-9] ]];
+			do
+				echo First arg is not a num. Try again.
+				read first
+			done
+			echo Type second number
+			read second
+			while ! [[ $second =~ [0-9] ]];
+			do
+				echo Nums only, try again
+				read second
+			done
+		else
+			echo Type second number
+			read second
+			while ! [[ $second =~ [0-9] ]];
+			do
+				echo Nums only, try again
+				read second
+			done
+		fi
+	elif ! [[ $second =~ [0-9] ]]; then
+		if ! [[ $first =~ [0-9] ]]; then
+			echo First arg is not a num. Try again
+			read first
+			while ! [[ $first =~ [0-9] ]];
+			do
+				echo Nums only, try again
+				read first
+			done
+		fi
+		echo Second arg is not a num. try again
+		read second
+		while ! [[ $second =~ [0-9] ]];
+		do
+			echo Nums only, try again.
+			read second
+		done
+	else
+		if ! [[ $first =~ [0-9] ]]; then
+			echo First arg is not a num. Try again
+			read first
+			while ! [[ $first =~ [0-9] ]];
+			do
+				echo Nums only, try again
+				read first
+			done
+		fi
+	fi
+}
+
 case $1 in
 "")
 	echo Calc is on. What do you want to do?
@@ -8,85 +79,26 @@ case $1 in
 		echo Wrong operation. Try again.
 		read a
 	done
-	echo Type first number:
-	read first
-	echo Type second number:
-	read second
+	num_check
 	./calc.sh $a $first $second
 	;;
 sum)
-	if [[ $3 == "" ]]; then
-		if [[ $2 == "" ]]; then
-			echo Type first number
-			read first
-			echo Type second number
-			read second
-		else
-			echo Type second number
-			read second
-			let  "first = $2"
-		fi
-	else
-		let "first = $2"
-		let "second = $3"
-	fi
+	num_check
 	let "sum = $first + $second"
 	echo sum of $first and $second = $sum
 	;;
 sub)
-	if [[ $3 == "" ]]; then
-		if [[ $2 == "" ]]; then
-			echo Type first number
-			read first
-			echo Type second number
-			read second
-		else
-			echo Type second number
-			read second
-			let "first = $2"
-		fi
-	else
-		let "first = $2"
-		let "second = $3"
-	fi
+	num_check
 	let "sub = $first - $second"
 	echo sub of $first and $second = $sub
 	;;
 mul)
-	if [[ $3 == "" ]]; then
-		if [[ $2 == ""  ]]; then
-			echo Type first number
-			read first
-			echo Type second number
-			read second
-		else
-			echo Type second number
-			read second
-			let "first = $2"
-		fi
-	else
-		let "first = $2"
-		let "second = $3"
-	fi
+	num_check
 	let "mul = $first * $second"
 	echo mul of $first and $second = $mul
 	;;
 div)
-	if [[ $3 == "" ]]; then
-		if [[ $2 == "" ]] ; then
-			echo Type first number
-			read first
-			echo Type second number
-			read second
-		else
-			echo Type second number
-			read second
-			let "first = $2"
-		fi
-	else
-		let "first = $2"
-		let "second = $3"
-	fi
+	num_check
 	while [ $second == 0 ];
 	do
 		echo Dividing by zero is not allowed. Type another number
