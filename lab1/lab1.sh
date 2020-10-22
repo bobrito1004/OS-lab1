@@ -17,7 +17,7 @@ case $1 in
 ;;
 "exit")
 	case $2 in
-	'^[0-9]+$')
+	*[0-9]*)
 		exit $2
 		;;
 	*)
@@ -70,4 +70,5 @@ case $1 in
 *)
 	echo Wrong key.
 	exit 0
+	;;
 esac
