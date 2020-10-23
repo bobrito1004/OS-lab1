@@ -9,11 +9,8 @@ do
 		continue
 	fi
 	ART=$(bc <<< "scale=10;$ser/$ns")
-	if [[ $ART =~ ".[0-9]\+" ]]
-		 then ART=$"0${ART}"
-	fi
 	if ([ $ART  != "" ] && [ $PPID != "" ])
 		then s=$"${s}ProsessID: $pid, Parent_ProcessID: $ppid, Average_Running_Time: $ART\n"
 	fi
 done
-echo -e "$s" | sort -k4 > ans4
+echo -e "$s" | sort -nk4 > ans4

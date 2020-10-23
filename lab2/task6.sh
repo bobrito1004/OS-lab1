@@ -12,6 +12,6 @@ do
 		fi
 	fi
 done
-echo $ans : $msize kB
+echo $ans: $msize kB
 echo $(top -o VIRT | head -8 | tail -n 1)
 exit 0
