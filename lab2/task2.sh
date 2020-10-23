@@ -1,2 +1,2 @@
 #!/bin/bash
-ps -A -o pid,cmd | egrep ' /sbin/' | gawk '{print $1}' > ans2
+ps -A -o pid,cmd | grep '/sbin' | gawk '{print $1}' > ans2
