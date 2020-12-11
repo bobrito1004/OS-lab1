@@ -1,0 +1,65 @@
+#!/bin/bash
+
+if [[ $# != 1 ]]
+then
+	echo "There should be 1 argument"
+	exit 1
+fi
+
+if [[ ! -d "$HOME/.trash" ]]
+then
+	echo "No trash found"
+fi
+
+if [[ ! -e "$HOME/.trash.log" ]]
+then
+	echo "No records found!"
+fi
+
+if [[ $(grep -E "$1 " "$HOME/.trash.log") == "" ]]
+then
+	echo "No $1 in records"
+fi
+
+echo "$(grep -E "/$1" $HOME/.trash.log)" |
+while read line;
+do
+	path=$(echo "$line" | awk '{print $1}')
+	ref=$(echo "$line" | awk '{print $2}')
+	read -p "Restore $path (y/n)?" answer <&1
+
+	case $answer in
+		"" | "Y" | "y")
+				dir=$(echo "$path" | awk -F"/$1" '{print $1}')
+				if [[ ! -d $dir ]]
+				then
+					echo "$dir doesn't exist anymore, file will be reistored in $HOME"
+					if [[ -f $path ]]
+					then
+						read -p "File $path already exist, choose another name: " new_name <&1
+						ln "$ref" "$HOME/$new_name"
+						rm "$ref"
+					else
+						ln "$ref" "$HOME"
+						rm "$ref"
+					fi
+				else
+					if [[ -f $path ]]
+					then
+						read -p "File $path already exist, choose another name: " new_name <&1
+						ln "$ref" "$path/$new_name"
+						rm "$ref"
+					else
+						ln "$ref" "$path"
+						rm "$ref"
+					fi
+				fi
+				grep -Ev "$ref" "$HOME/.trash.log" > .tmp
+				cat .tmp > "$HOME/.trash.log"
+				rm .tmp
+			;;
+		*)
+			continue
+			;;
+	esac
+done

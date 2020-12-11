@@ -1,0 +1,33 @@
+#!/bin/bash
+if [[ ! -e "$HOME/.trash/.num" ]]
+then
+	echo 1 > "$HOME/.trash/.num"
+fi
+
+if [[ $# != 1 ]]
+then
+	echo "There should be only 1 argument"
+	exit 1
+fi
+
+if [[ ! -f $1 ]]
+then
+	echo "No $1 file in this directory"
+fi
+
+
+if [[ ! -d "$HOME/.trash" ]]
+then
+	mkdir "$HOME/.trash"
+fi
+
+num=$(cat "$HOME/.trash/.num")
+f="$PWD/$1"
+fln="$HOME/.trash/$num"
+ln "$f" "$fln"
+touch "$fln"
+(( num=num+1 ))
+echo "$num" > "$HOME/.trash/.num"
+rm "$f"
+
+echo "$f $fln" >> "$HOME/.trash.log"

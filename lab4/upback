@@ -1,0 +1,20 @@
+#!/bin/bash
+
+if [[ -d "$HOME/restore" ]]
+then
+	rmdir "/$HOME/restore"
+fi
+mkdir "$HOME/restore"
+
+prev=$(ls $home | grep -E "^Backup-" | sort -n | tail -1)
+
+if [[ -z "$prev" ]]
+then
+	echo "There are no files to restore"
+	exit 1
+fi
+
+for line in $( ls "$HOME/$prev" | grep -Ev "\-[0-9]{4}-[0-9]{2}-[0-9]{2}$")
+do
+	cp "$HOME/$prev/$line" "$HOME/restore/$line"
+done

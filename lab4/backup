@@ -1,0 +1,52 @@
+#!/bin/bash
+
+if [[ ! -d "$HOME/source" ]]
+then
+	echo "Source directory doesn't exist"
+	exit
+fi
+
+prev=$(ls "$HOME" | grep -E "^Backup-" | sort -n | tail -1)
+dt=$(date + "%Y-%m-%d")
+dts=$(date -d "$dt" + "%s")
+prevdt=$(echo "$prev" | sed "s/Backup-//")
+prevdts=$(date -d "$prevdt" + "%s")
+diff=$(echo "(${dts} - ${prevdts}) / (3600 * 24) " | bc)
+
+if [[ ! -e "$HOME/backup-report" ]]
+then
+	touch "$HOME/backup-report"
+fi
+
+if [[ "$diff" -ge 7 ]] || [[ "$prev" == "" ]]
+then
+	mkdir "$HOME/Backup-${dt}"
+	for line in ($ls "$HOME/source")
+	do
+		cp "$HOME/source/$line" "$HOME/Backup-${dt}"
+	done
+	echo -e "[New backup]\tDate ${dt}\n\t\tFiles: $(ls "$HOME/Backup-${dt}" | tr '\n' ' ')\n" >> "$HOME/backup-report"
+else
+	> changed_files_info
+	> new_files_info
+	for line in $(ls "$HOME/source")
+	do
+		if [[ ! -f "$HOME/$prev/$line" ]]
+		then
+			cp "$HOME/source/$line" "$HOME/$prev"
+			echo "Copied: $line" >> new_files_info
+		else
+			new_size=$(wc -c "$HOME/source/$line" | awk '{print $1}')
+			old_size=$(wc -c "$HOME/$prev/$line" | awk '{print $1}')
+			if [[ "$new_size" -ne "$old_size" ]]
+			then
+				mv "$HOME/$prev/$line" "$HOME/$prev/$line-${dt}"
+				echo "[Changed] From: $line To: $line-${dt}" >> changed_files_info
+				cp "$HOME/source/$line" "$HOME/$prev/$line"
+			fi
+		fi
+	done
+	echo -e "[Changed backup]\n\tDate ${dt}\n\tNew files:\n$(cat new_files_info)\n\tChanged file:\n$(cat changed_file)" >> "$HOME/backup-report"
+	rm changed_files_info 2>/dev/null
+	rm new_files_info 2>/dev/null
+fi
