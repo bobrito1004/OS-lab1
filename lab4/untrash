@@ -54,9 +54,10 @@ do
 						rm "$ref"
 					fi
 				fi
-				grep -Ev "$ref" "$HOME/.trash.log" > .tmp
-				cat .tmp > "$HOME/.trash.log"
-				rm .tmp
+				i=$(grep -Ev "$ref" "$HOME/.trash.log") #> .tmp
+				$i > "$HOME/.trash.log"
+				#rm .tmp
+				#grep -Ev "$ref" "$HOME/.trash.log" > "$HOME/.trash.log"
 			;;
 		*)
 			continue
