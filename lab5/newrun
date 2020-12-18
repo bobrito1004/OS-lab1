@@ -1,0 +1,9 @@
+#!/bin/bash
+step=0
+while [[ $step -lt $1 ]];
+do
+	echo $step $1
+	#./newmem.bash $2
+	sleep 1
+	let "step=$step+1"
+done
