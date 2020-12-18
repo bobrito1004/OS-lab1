@@ -1,0 +1,9 @@
+#!/bin/bash
+echo '' > watch.log
+while (true);
+do
+	mem=$(pmap $1 | grep 'total' | grep -o ' [0-9.]\+')
+	d=$(date +%T)
+	echo $d: $mem >> watch.log
+	sleep 1
+done
