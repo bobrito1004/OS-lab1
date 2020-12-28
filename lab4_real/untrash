@@ -1,0 +1,66 @@
+#!/bin/bash
+if [[ $# != 1 ]]
+then
+	echo "There should be 1 argument"
+	exit 1
+fi
+
+if [[ ! -d "$HOME/.trash" ]]
+then
+	echo "No bin"
+	exit 2
+fi
+
+if [[ ! -e "$HOME/.trash.log" ]]
+then
+	echo "No log"
+	exit 3
+fi
+
+records=$(grep -E "$1 " "$HOME/.trash.log")
+if [[ $records == "" ]]
+then
+	echo "No records on $1 found"
+	exit 4
+fi
+
+arrrecords=($records)
+count=${#arrrecords[@]}
+if [[ $count > 2 ]]
+then
+	for (( i=0; i<$count; i=i+2 ))
+	do
+		echo Is ${arrrecords[$i]} the right file? y/n
+		read ans
+		if [[ $ans == "y" ]]
+		then
+			file="${arrrecords[$i]}"
+			inbin="${arrrecords[$i+1]}"
+			break
+		fi
+	done
+else
+	file="${arrrecords[0]}"
+	inbin="${arrrecords[1]}"
+fi
+
+if [[ $file == "" ]]
+then
+	echo No more files
+	exit 5
+fi
+dir=$(dirname $file)/
+file=$(basename $file)
+if [[ ! -d $dir ]]
+then
+	echo No such directory anymore. File will be saved at $HOME/
+	dir=$HOME/
+fi
+
+while [[ -f $dir$file ]]
+do
+	echo Name conflict. Please rename file.
+	read file
+done
+ln $inbin $dir$file
+rm $inbin

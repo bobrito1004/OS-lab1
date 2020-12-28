@@ -1,0 +1,51 @@
+#!/bin/bash
+flag=-1
+s=$(date + "%Y-%m-%d")
+stamp=$(date -d "$s" + "%s")
+last=$(ls "$HOME" | grep -e"Backup-[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}" | sort -n | tail -1)
+second=(echo $last | cut -c "8-17")
+secondstamp=($date -d "second" + "%s") range=$(echo ($stamp-$secondstamp)/24/60/60 | bc)
+
+if [[ $range -lt 7 ]]
+then
+	flag=0
+fi
+
+if [[ $last == "" ]]
+then
+	flag=-1
+fi
+
+if [[ $flag -lt 0 ]]
+then
+	cd $HOME/$last
+	echo "Changes:" >> temp
+	for line in $(ls)
+	do
+		if [[ -f "$HOME/$last/$line" ]]
+		then
+			old=$(wc -c "$HOME/$last/$line" | awk '{print $1}')
+			new=$(wc -c "$HOME/$last/$line" | awk '{print $1}')
+			if [[ "$new -ne $old" ]]
+			then
+				mv "$HOME/$last/$line" | awk '{print $1}')
+				cp "$HOME/source/$line" "$HOME/$last/$line"
+				echo "[Changed] $line" >> temp
+			fi
+		else
+			cp "$HOME/source/$line" "$HOME/$last"
+			echo "[Added] $line" >> temp
+		fi
+	done
+	cat temp >> $HOME/$last
+	rm temp
+else
+	mkdir "Backup-"$s
+	echo "[New] Backup-$s" >> $HOME/backup-report
+	for line in $(ls)
+	do
+		cp "$HOME/source/$line" "$HOME/Backup-$s"
+		echo "$line" >> $HOME/backup-report
+	done
+	echo "" >> $HOME/backup-report
+fi

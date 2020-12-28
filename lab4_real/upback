@@ -1,0 +1,17 @@
+#!/bin/bash
+
+if [[ -d "$HOME/restore" ]]
+then
+	rmdir "$HOME/restore"
+fi
+mkdir "$HOME/restore"
+last=$(ls $HOME | grep -e "Backup-[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}$" | sort -n | tail -1)
+if [[ $last == "" ]]
+then
+	echo "No such backup"
+	exit 1
+fi
+for line in $(ls $HOME/$last" | grep -ev ".[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}$")
+do
+	cp "$HOME/$last/$line" "$HOME/restore/$line"
+done
